@@ -9,9 +9,9 @@ const imageOptions: ImageOptions = {
     width: 224,
     height: 224,
 };
-async function loadModel() {
+async function loadModel(path: Blob) {
     const session = new InferenceSession({});
-    await session.loadModel('./resnet50_prob.onnx');
+    await session.loadModel(path);
     return session;
 }
 interface Props {}
@@ -22,10 +22,14 @@ const HomeContainer: React.FC<Props> = (props) => {
 
     const [topkResult, setTopkResult] = useState<TopkResult[]>([]);
 
-    const sessionPromise = useRef<Promise<InferenceSession>>(loadModel());
+    const sessionPromise = useRef<Promise<InferenceSession>>();
     useEffect(() => {
         (async () => {
             if (!url) {
+                return;
+            }
+            if (!sessionPromise.current) {
+                alert('沒有選擇模型!');
                 return;
             }
             setLoading(true);
@@ -45,6 +49,14 @@ const HomeContainer: React.FC<Props> = (props) => {
             setLoading(false);
         })();
     }, [url]);
+
+    const modelInputChange = async (files?: File[]) => {
+        if (!files || files.length === 0) {
+            return;
+        }
+        sessionPromise.current = loadModel(files[0]);
+    };
+
     const inputChange = (files?: File[]) => {
         if (!files || files.length === 0) {
             return;
@@ -54,18 +66,25 @@ const HomeContainer: React.FC<Props> = (props) => {
 
     return (
         <div>
+            <div>
+                <span>選擇模型</span>
+                <input type="file" onChange={(e) => modelInputChange((e.target?.files as any) as File[])}></input>
+            </div>
+            <div>
+                <span>選擇圖片</span>
+                <input type="file" onChange={(e) => inputChange((e.target?.files as any) as File[])}></input>
+            </div>
             {loading && <div>Loading...</div>}
+            <img ref={imgRef} id="img" width="224" height="224" src={url} />
             <div>
                 {topkResult.map((item, index) => (
                     <div key={item.index}>
                         <span style={{ paddingRight: 8 }}>{index + 1}.</span>
                         <span>{ImageNetClassname[item.index.toString() as '0']}</span>
-                        <span>({(item.value * 100).toFixed(2)})</span>
+                        <span>({(item.value * 100).toFixed(2)}%)</span>
                     </div>
                 ))}
             </div>
-            <input type="file" onChange={(e) => inputChange((e.target?.files as any) as File[])}></input>
-            <img ref={imgRef} id="img" width="224" height="224" src={url} />
         </div>
     );
 };
