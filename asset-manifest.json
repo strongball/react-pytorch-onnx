@@ -1,7 +1,7 @@
 {
   "files": {
-    "main.js": "/react-pytorch-onnx/static/js/main.5789dc39.chunk.js",
-    "main.js.map": "/react-pytorch-onnx/static/js/main.5789dc39.chunk.js.map",
+    "main.js": "/react-pytorch-onnx/static/js/main.208b08a1.chunk.js",
+    "main.js.map": "/react-pytorch-onnx/static/js/main.208b08a1.chunk.js.map",
     "runtime-main.js": "/react-pytorch-onnx/static/js/runtime-main.b0d6c3d7.js",
     "runtime-main.js.map": "/react-pytorch-onnx/static/js/runtime-main.b0d6c3d7.js.map",
     "static/js/2.4ad9d4ea.chunk.js": "/react-pytorch-onnx/static/js/2.4ad9d4ea.chunk.js",
@@ -12,6 +12,6 @@
   "entrypoints": [
     "static/js/runtime-main.b0d6c3d7.js",
     "static/js/2.4ad9d4ea.chunk.js",
-    "static/js/main.5789dc39.chunk.js"
+    "static/js/main.208b08a1.chunk.js"
   ]
 }
