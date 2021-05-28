@@ -9,9 +9,9 @@ const imageOptions: ImageOptions = {
     width: 224,
     height: 224,
 };
-async function loadModel(path: Blob) {
+async function loadModel(path: Blob | string) {
     const session = new InferenceSession({});
-    await session.loadModel(path);
+    await session.loadModel(path as string);
     return session;
 }
 interface Props {}
@@ -22,7 +22,9 @@ const HomeContainer: React.FC<Props> = (props) => {
 
     const [topkResult, setTopkResult] = useState<TopkResult[]>([]);
 
-    const sessionPromise = useRef<Promise<InferenceSession>>();
+    const sessionPromise = useRef<Promise<InferenceSession>>(
+        loadModel(process.env.PUBLIC_URL + '/mobilenet_v3_small.onnx')
+    );
     useEffect(() => {
         (async () => {
             if (!url) {
@@ -67,12 +69,18 @@ const HomeContainer: React.FC<Props> = (props) => {
     return (
         <div>
             <div>
-                <span>選擇模型</span>
+                <span>更換模型</span>
                 <input type="file" onChange={(e) => modelInputChange((e.target?.files as any) as File[])}></input>
             </div>
             <div>
                 <span>選擇圖片</span>
-                <input type="file" onChange={(e) => inputChange((e.target?.files as any) as File[])}></input>
+                <input
+                    type="file"
+                    name="image"
+                    accept="image/*"
+                    capture="environment"
+                    onChange={(e) => inputChange((e.target?.files as any) as File[])}
+                />
             </div>
             {loading && <div>Loading...</div>}
             <img ref={imgRef} id="img" width="224" height="224" src={url} />
