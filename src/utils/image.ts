@@ -12,22 +12,104 @@ export function loadImage(url: string): Promise<HTMLImageElement> {
     });
 }
 
-export interface ImageOptions {
+export interface ImageSize {
     width: number;
     height: number;
 }
-export function imageToArray(image: HTMLImageElement, options: ImageOptions): Uint8ClampedArray {
-    const { width, height } = options;
-    const canvas = document.createElement('canvas');
-    canvas.width = width;
-    canvas.height = height;
+interface DrawImageToCanvasOptions {
+    canvas?: HTMLCanvasElement;
+    imageSize: ImageSize;
+}
+export async function drawImageToCanvas(
+    imageUrl: string,
+    options: DrawImageToCanvasOptions
+): Promise<HTMLCanvasElement> {
+    const canvas = options.canvas || document.createElement('canvas');
+    const image = await loadImage(imageUrl);
+    resizeDrawToCanvas(image, canvas, {
+        sourceSize: {
+            width: image.width,
+            height: image.height,
+        },
+        targetSize: {
+            width: options.imageSize.width,
+            height: options.imageSize.height,
+        },
+    });
+    return canvas;
+}
+
+interface ResizeDrawToCanvasOptions {
+    sourceSize: ImageSize;
+    targetSize: ImageSize;
+}
+export function resizeDrawToCanvas(
+    source: CanvasImageSource,
+    canvas: HTMLCanvasElement,
+    options: ResizeDrawToCanvasOptions
+) {
+    const { sourceSize, targetSize } = options;
+    const hRatio = targetSize.width / sourceSize.width;
+    const vRatio = targetSize.height / sourceSize.height;
+    const ratio = Math.min(hRatio, vRatio);
+    const drawWidth = sourceSize.width * ratio;
+    const drwaHeight = sourceSize.height * ratio;
+    const centerShift_x = (targetSize.width - drawWidth) / 2;
+    const centerShift_y = (targetSize.height - drwaHeight) / 2;
+
     const context = canvas.getContext('2d')!;
-    context.drawImage(image, 0, 0, width, height);
+    context.drawImage(
+        source,
+        0,
+        0,
+        sourceSize.width,
+        sourceSize.height,
+        centerShift_x,
+        centerShift_y,
+        drawWidth,
+        drwaHeight
+    );
+}
+
+interface CoverDrawToCanvasOptions {
+    sourceSize: ImageSize;
+    targetSize: ImageSize;
+}
+export function coverDrawToCanvas(
+    source: CanvasImageSource,
+    canvas: HTMLCanvasElement,
+    options: CoverDrawToCanvasOptions
+) {
+    const { sourceSize, targetSize } = options;
+    const hRatio = targetSize.width / sourceSize.width;
+    const vRatio = targetSize.height / sourceSize.height;
+    const ratio = Math.max(hRatio, vRatio);
+    const drawWidth = sourceSize.width * ratio;
+    const drwaHeight = sourceSize.height * ratio;
+    const centerShift_x = (targetSize.width - drawWidth) / 2;
+    const centerShift_y = (targetSize.height - drwaHeight) / 2;
+
+    const context = canvas.getContext('2d')!;
+    context.drawImage(
+        source,
+        0,
+        0,
+        sourceSize.width,
+        sourceSize.height,
+        centerShift_x,
+        centerShift_y,
+        drawWidth,
+        drwaHeight
+    );
+}
+
+export function canvasToArray(canvas: HTMLCanvasElement): Uint8ClampedArray {
+    const context = canvas.getContext('2d')!;
     const imageData = context.getImageData(0, 0, canvas.width, canvas.height);
     return imageData.data;
 }
 
-export function fromHWCToCHW(data: any, options: ImageOptions): Float32Array {
+export function fromHWCToCHW(data: any, options: ImageSize): Float32Array {
     const { width, height } = options;
     const dataFromImage = ndarray(new Float32Array(data), [width, height, 4]);
     const dataProcessed = ndarray(new Float32Array(width * height * 3), [1, 3, height, width]);
