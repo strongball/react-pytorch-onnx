@@ -1,7 +1,8 @@
-import { InferenceSession } from 'onnxjs';
+import { InferenceSession } from 'onnxruntime-web';
 
-export async function loadModel(path: Blob | string) {
-    const session = new InferenceSession({});
-    await session.loadModel(path as string);
+export async function loadModel(path: File | string) {
+    console.log(path);
+    const data = typeof path === 'string' ? path : await path.arrayBuffer();
+    const session = await InferenceSession.create(data as any);
     return session;
 }

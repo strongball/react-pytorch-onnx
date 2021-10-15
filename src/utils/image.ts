@@ -58,6 +58,7 @@ export function resizeDrawToCanvas(
     const centerShift_y = (targetSize.height - drwaHeight) / 2;
 
     const context = canvas.getContext('2d')!;
+    context.clearRect(0, 0, sourceSize.width, sourceSize.height);
     context.drawImage(
         source,
         0,
@@ -103,10 +104,10 @@ export function coverDrawToCanvas(
     );
 }
 
-export function canvasToArray(canvas: HTMLCanvasElement): Uint8ClampedArray {
+export function canvasToArray(canvas: HTMLCanvasElement): Float32Array {
     const context = canvas.getContext('2d')!;
     const imageData = context.getImageData(0, 0, canvas.width, canvas.height);
-    return imageData.data;
+    return Float32Array.from(imageData.data.values());
 }
 
 /**
@@ -115,7 +116,7 @@ export function canvasToArray(canvas: HTMLCanvasElement): Uint8ClampedArray {
  * @param options ImageSize
  * @returns [batch, c, h, w]
  */
-export function fromHWCToCHW(data: number[] | Float32Array, options: ImageSize): Float32Array {
+export function fromHWCToCHW(data: Float32Array, options: ImageSize): Float32Array {
     const { height, width } = options;
     const dataFromImage = ndarray(new Float32Array(data), [height, width, 4]);
     const dataProcessed = ndarray(new Float32Array(width * height * 3), [1, 3, height, width]);

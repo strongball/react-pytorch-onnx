@@ -35,11 +35,11 @@ const App: React.FC = () => {
                 </Toolbar>
             </AppBar>
             <Container className={classes.body}>
-                {/* <Switch> */}
-                <Route path="/" exact component={FromFileContainer} />
-                <Route path="/file" exact component={FromFileContainer} />
-                <Route path="/camera" exact component={FromCameraContainer} />
-                {/* </Switch> */}
+                <Switch>
+                    <Route path="/" exact component={FromFileContainer} />
+                    <Route path="/file" exact component={FromFileContainer} />
+                    <Route path="/camera" exact component={FromCameraContainer} />
+                </Switch>
             </Container>
         </Router>
     );
