@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useRef } from 'react';
-import { Tensor, InferenceSession } from 'onnxjs';
+import { Tensor, InferenceSession } from 'onnxruntime-web';
 import {
     Button,
     Card,
@@ -50,9 +50,12 @@ const HomeContainer: React.FC<Props> = (props) => {
     const [loading, setLoading] = useState<boolean>(false);
     const [topkResult, setTopkResult] = useState<TopkResult[]>([]);
 
-    const sessionPromise = useRef<Promise<InferenceSession>>(
-        loadModel(process.env.PUBLIC_URL + '/mobilenet_v3_small.onnx')
-    );
+    const sessionPromise = useRef<Promise<InferenceSession>>();
+
+    useEffect(() => {
+        sessionPromise.current = loadModel(process.env.PUBLIC_URL + '/mobilenet_v3_small.onnx');
+    }, []);
+
     useEffect(() => {
         (async () => {
             if (!url) {
@@ -68,10 +71,9 @@ const HomeContainer: React.FC<Props> = (props) => {
                 const canvas = await drawImageToCanvas(url, { imageSize: imageOptions, canvas: canvasRef.current! });
                 const arrImage = canvasToArray(canvas);
                 const imageCHW = fromHWCToCHW(arrImage, imageOptions);
-                const inputTensor = new Tensor(imageCHW, 'float32', [1, 3, 224, 224]);
-                const outputMap = await session.run([inputTensor]);
-                const output: Float32Array = outputMap.values().next().value.data;
-                const topk5 = topk(output);
+                const inputTensor = new Tensor('float32', imageCHW, [1, 3, 224, 224]);
+                const outputMap = await session.run({ input: inputTensor });
+                const topk5 = topk(outputMap.output.data as Float32Array);
                 setTopkResult(topk5);
             } catch (err) {
                 console.error(err);
@@ -103,7 +105,7 @@ const HomeContainer: React.FC<Props> = (props) => {
     };
 
     return (
-        <Grid container spacing={2} justify="center">
+        <Grid container spacing={2} justifyContent="center">
             <Grid item xs={12} md={4}>
                 <Card>
                     <CardActions>
@@ -115,7 +117,7 @@ const HomeContainer: React.FC<Props> = (props) => {
                                 type="file"
                                 name="image"
                                 accept="image/*"
-                                onChange={(e) => inputChange((e.target?.files as any) as File[])}
+                                onChange={(e) => inputChange(e.target?.files as any as File[])}
                             />
                         </Button>
                         <Button size="small" color="secondary" variant="contained" onClick={handlePickModel}>
@@ -124,7 +126,7 @@ const HomeContainer: React.FC<Props> = (props) => {
                                 ref={modelInputRef}
                                 style={{ display: 'none' }}
                                 type="file"
-                                onChange={(e) => modelInputChange((e.target?.files as any) as File[])}
+                                onChange={(e) => modelInputChange(e.target?.files as any as File[])}
                             ></input>
                         </Button>
                     </CardActions>
