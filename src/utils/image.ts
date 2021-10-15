@@ -109,14 +109,20 @@ export function canvasToArray(canvas: HTMLCanvasElement): Uint8ClampedArray {
     return imageData.data;
 }
 
-export function fromHWCToCHW(data: any, options: ImageSize): Float32Array {
-    const { width, height } = options;
-    const dataFromImage = ndarray(new Float32Array(data), [width, height, 4]);
+/**
+ *
+ * @param data [h, w, c]
+ * @param options ImageSize
+ * @returns [batch, c, h, w]
+ */
+export function fromHWCToCHW(data: number[] | Float32Array, options: ImageSize): Float32Array {
+    const { height, width } = options;
+    const dataFromImage = ndarray(new Float32Array(data), [height, width, 4]);
     const dataProcessed = ndarray(new Float32Array(width * height * 3), [1, 3, height, width]);
     ops.divseq(dataFromImage, 255.0);
     ops.assign(dataProcessed.pick(0, 0, null, null), dataFromImage.pick(null, null, 0));
     ops.assign(dataProcessed.pick(0, 1, null, null), dataFromImage.pick(null, null, 1));
     ops.assign(dataProcessed.pick(0, 2, null, null), dataFromImage.pick(null, null, 2));
 
-    return (dataProcessed.data as any) as Float32Array;
+    return dataProcessed.data;
 }

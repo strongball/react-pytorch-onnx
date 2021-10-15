@@ -2,7 +2,7 @@ export interface TopkResult {
     index: number;
     value: number;
 }
-export function topk(data: Float32Array, k = 5) {
+export function topk(data: Float32Array, k = 5): TopkResult[] {
     return Array.from(data)
         .map<TopkResult>((value, index) => ({
             index,
