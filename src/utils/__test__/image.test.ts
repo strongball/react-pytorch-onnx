@@ -29,7 +29,7 @@ describe('fromHWCToCHW', () => {
     it('default', async () => {
         const height = TestCanvasImage.length;
         const width = TestCanvasImage[0].length;
-        const result = fromHWCToCHW(TestCanvasImage.flat().flat(), {
+        const result = fromHWCToCHW(Float32Array.from(TestCanvasImage.flat().flat()), {
             height: height,
             width: width,
         });

@@ -68,12 +68,7 @@ const HomeContainer: React.FC<Props> = (props) => {
     const sessionPromise = useRef<Promise<InferenceSession>>();
 
     useEffect(() => {
-        const timeout = setTimeout(() => {
-            sessionPromise.current = loadModel(process.env.PUBLIC_URL + '/mobilenet_v3_small.onnx');
-        }, 1000);
-        return () => {
-            clearTimeout(timeout);
-        };
+        sessionPromise.current = loadModel(process.env.PUBLIC_URL + '/mobilenet_v3_small.onnx');
     }, []);
 
     const modelInputRef = useRef<HTMLInputElement>(null);
