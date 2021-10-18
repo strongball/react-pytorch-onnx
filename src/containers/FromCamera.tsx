@@ -15,6 +15,7 @@ import {
     ListItemAvatar,
     Avatar,
     IconButton,
+    Box,
 } from '@material-ui/core';
 import { PlayArrow, Camera } from '@material-ui/icons';
 import { canvasToArray, fromHWCToCHW, ImageSize, coverDrawToCanvas } from '../utils/image';
@@ -41,7 +42,7 @@ const useStyles = makeStyles(() =>
             position: 'absolute',
             display: 'flex',
             justifyContent: 'center',
-            bottom: 0,
+            bottom: 10,
             left: 0,
             right: 0,
         },
@@ -98,7 +99,7 @@ const HomeContainer: React.FC<Props> = (props) => {
             const imageCHW = fromHWCToCHW(arrImage, imageOptions);
             const inputTensor = new Tensor('float32', imageCHW, [1, 3, 224, 224]);
             const outputMap = await session.run({ input: inputTensor });
-            const output: Float32Array = outputMap['outpus'].data as Float32Array;
+            const output: Float32Array = outputMap['output'].data as Float32Array;
             const topk5 = topk(output);
             setTopkResult(topk5);
         } catch (err) {
@@ -177,13 +178,15 @@ const HomeContainer: React.FC<Props> = (props) => {
                                 <CircularProgress />
                             </div>
                         )}
-                        <video ref={videoRef} autoPlay width="224" height="224"></video>
-                        <canvas style={{ display: 'none' }} ref={canvasRef} id="canvas" width="224" height="224" />
-                        <div className={classes.captureControl}>
-                            <IconButton aria-label="capture" onClick={() => captureVideo()}>
-                                <Camera />
-                            </IconButton>
-                        </div>
+                        <Box position="relative">
+                            <video ref={videoRef} autoPlay width="224" height="224"></video>
+                            <canvas style={{ display: 'none' }} ref={canvasRef} id="canvas" width="224" height="224" />
+                            <div className={classes.captureControl}>
+                                <IconButton aria-label="capture" onClick={() => captureVideo()}>
+                                    <Camera />
+                                </IconButton>
+                            </div>
+                        </Box>
                     </CardContent>
                 </Card>
             </Grid>
