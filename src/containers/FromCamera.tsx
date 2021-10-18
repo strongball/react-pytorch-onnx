@@ -17,7 +17,7 @@ import {
     IconButton,
     Box,
 } from '@material-ui/core';
-import { PlayArrow, Camera } from '@material-ui/icons';
+import { PlayArrow, CameraRounded } from '@material-ui/icons';
 import { canvasToArray, fromHWCToCHW, ImageSize, coverDrawToCanvas } from '../utils/image';
 import { topk, TopkResult } from '../utils/fns';
 import { loadModel } from '../utils/onnx';
@@ -42,10 +42,11 @@ const useStyles = makeStyles(() =>
             position: 'absolute',
             display: 'flex',
             justifyContent: 'center',
-            bottom: 10,
+            bottom: 12,
             left: 0,
             right: 0,
         },
+        cameraIcon: { background: 'white', border: '2px rgba(0,0,0,.2) solid' },
     })
 );
 
@@ -179,11 +180,21 @@ const HomeContainer: React.FC<Props> = (props) => {
                             </div>
                         )}
                         <Box position="relative">
-                            <video ref={videoRef} autoPlay width="224" height="224"></video>
+                            <video
+                                style={{ border: '1px rgba(0,0,0,.4) solid' }}
+                                ref={videoRef}
+                                autoPlay
+                                width="224"
+                                height="224"
+                            ></video>
                             <canvas style={{ display: 'none' }} ref={canvasRef} id="canvas" width="224" height="224" />
                             <div className={classes.captureControl}>
-                                <IconButton aria-label="capture" onClick={() => captureVideo()}>
-                                    <Camera />
+                                <IconButton
+                                    className={classes.cameraIcon}
+                                    aria-label="capture"
+                                    onClick={() => captureVideo()}
+                                >
+                                    <CameraRounded />
                                 </IconButton>
                             </div>
                         </Box>
