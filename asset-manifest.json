@@ -1,20 +1,17 @@
 {
   "files": {
-    "main.css": "/react-pytorch-onnx/static/css/main.4a910f10.chunk.css",
-    "main.js": "/react-pytorch-onnx/static/js/main.7eb5cef6.chunk.js",
-    "main.js.map": "/react-pytorch-onnx/static/js/main.7eb5cef6.chunk.js.map",
-    "runtime-main.js": "/react-pytorch-onnx/static/js/runtime-main.fbef2fcd.js",
-    "runtime-main.js.map": "/react-pytorch-onnx/static/js/runtime-main.fbef2fcd.js.map",
-    "static/js/2.2e26be2f.chunk.js": "/react-pytorch-onnx/static/js/2.2e26be2f.chunk.js",
-    "static/js/2.2e26be2f.chunk.js.map": "/react-pytorch-onnx/static/js/2.2e26be2f.chunk.js.map",
+    "main.css": "/react-pytorch-onnx/static/css/main.8a685450.css",
+    "main.js": "/react-pytorch-onnx/static/js/main.8247291c.js",
+    "static/js/ort-wasm-simd.wasm": "/react-pytorch-onnx/static/js/ort-wasm-simd.wasm",
+    "static/js/ort-wasm.wasm": "/react-pytorch-onnx/static/js/ort-wasm.wasm",
+    "static/js/ort-wasm-simd-threaded.wasm": "/react-pytorch-onnx/static/js/ort-wasm-simd-threaded.wasm",
+    "static/js/ort-wasm-threaded.wasm": "/react-pytorch-onnx/static/js/ort-wasm-threaded.wasm",
     "index.html": "/react-pytorch-onnx/index.html",
-    "static/css/main.4a910f10.chunk.css.map": "/react-pytorch-onnx/static/css/main.4a910f10.chunk.css.map",
-    "static/js/2.2e26be2f.chunk.js.LICENSE.txt": "/react-pytorch-onnx/static/js/2.2e26be2f.chunk.js.LICENSE.txt"
+    "main.8a685450.css.map": "/react-pytorch-onnx/static/css/main.8a685450.css.map",
+    "main.8247291c.js.map": "/react-pytorch-onnx/static/js/main.8247291c.js.map"
   },
   "entrypoints": [
-    "static/js/runtime-main.fbef2fcd.js",
-    "static/js/2.2e26be2f.chunk.js",
-    "static/css/main.4a910f10.chunk.css",
-    "static/js/main.7eb5cef6.chunk.js"
+    "static/css/main.8a685450.css",
+    "static/js/main.8247291c.js"
   ]
 }
