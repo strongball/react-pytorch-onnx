@@ -9,20 +9,18 @@ import {
     makeStyles,
     createStyles,
     Grid,
-    List,
-    ListItem,
-    ListItemText,
-    ListItemAvatar,
-    Avatar,
     IconButton,
     Box,
 } from '@material-ui/core';
-import { PlayArrow, CameraRounded } from '@material-ui/icons';
+import { CameraRounded } from '@material-ui/icons';
+import ResultList from '../components/ResultList';
+
 import { canvasToArray, fromHWCToCHW, ImageSize, coverDrawToCanvas } from '../utils/image';
 import { topk, TopkResult } from '../utils/fns';
 import { loadModel } from '../utils/onnx';
 
 import ImageNetClassname from '../classname.json';
+import { useOnnx } from '../hooks/onnx';
 
 const useStyles = makeStyles(() =>
     createStyles({
@@ -61,17 +59,13 @@ const HomeContainer: React.FC<Props> = (props) => {
 
     const videoRef = useRef<HTMLVideoElement>(null);
     const videoStreamRef = useRef<MediaStream>();
-    const canvasRef = useRef<HTMLCanvasElement>(null);
-    const [loading, setLoading] = useState<boolean>(false);
-    const [recordLoading, setRecordLoading] = useState<boolean>(false);
 
-    const [topkResult, setTopkResult] = useState<TopkResult[]>([]);
+    const [modelPath, setModelPath] = useState<string | File>(process.env.PUBLIC_URL + '/mobilenet_v3_small.onnx');
 
-    const sessionPromise = useRef<Promise<InferenceSession>>();
-
-    useEffect(() => {
-        sessionPromise.current = loadModel(process.env.PUBLIC_URL + '/mobilenet_v3_small.onnx');
-    }, []);
+    const { canvasRef, loading, predit, topkResults } = useOnnx({
+        model: modelPath,
+        imageOptions,
+    });
 
     const modelInputRef = useRef<HTMLInputElement>(null);
     const handlePickModel = () => {
@@ -81,32 +75,7 @@ const HomeContainer: React.FC<Props> = (props) => {
         if (!files || files.length === 0) {
             return;
         }
-        sessionPromise.current = loadModel(files[0]);
-    };
-
-    const predit = async () => {
-        if (!canvasRef.current) {
-            return;
-        }
-        if (!sessionPromise.current) {
-            alert('沒有選擇模型!');
-            return;
-        }
-        setLoading(true);
-        try {
-            console.log('start pred');
-            const session = await sessionPromise.current;
-            const arrImage = canvasToArray(canvasRef.current);
-            const imageCHW = fromHWCToCHW(arrImage, imageOptions);
-            const inputTensor = new Tensor('float32', imageCHW, [1, 3, 224, 224]);
-            const outputMap = await session.run({ input: inputTensor });
-            const output: Float32Array = outputMap['output'].data as Float32Array;
-            const topk5 = topk(output);
-            setTopkResult(topk5);
-        } catch (err) {
-            console.error(err);
-        }
-        setLoading(false);
+        setModelPath(files[0]);
     };
 
     const captureVideo = () => {
@@ -125,7 +94,6 @@ const HomeContainer: React.FC<Props> = (props) => {
         }
     };
     const startTracking = async () => {
-        setRecordLoading(true);
         if (videoRef.current && navigator.mediaDevices.getUserMedia) {
             const stream = await navigator.mediaDevices.getUserMedia({
                 audio: false,
@@ -141,7 +109,6 @@ const HomeContainer: React.FC<Props> = (props) => {
         }
     };
     const stopTracking = () => {
-        setRecordLoading(false);
         if (videoRef.current?.srcObject) {
             videoRef.current.srcObject = null;
         }
@@ -152,7 +119,6 @@ const HomeContainer: React.FC<Props> = (props) => {
     useEffect(() => {
         return () => {
             stopTracking();
-            console.log('call');
         };
     }, []);
     return (
@@ -203,19 +169,7 @@ const HomeContainer: React.FC<Props> = (props) => {
             </Grid>
             <Grid item xs={12} md={6}>
                 <Card>
-                    <List>
-                        {topkResult.map((item, index) => (
-                            <ListItem key={item.index}>
-                                <ListItemAvatar>
-                                    <Avatar>{index + 1}</Avatar>
-                                </ListItemAvatar>
-                                <ListItemText
-                                    primary={ImageNetClassname[item.index.toString() as '0']}
-                                    secondary={`(${(item.value * 100).toFixed(2)}%)`}
-                                />
-                            </ListItem>
-                        ))}
-                    </List>
+                    <ResultList topkResults={topkResults} />
                 </Card>
             </Grid>
         </Grid>
